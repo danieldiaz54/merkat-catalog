@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: merkat-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - merkat_mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: merkat-redis
+    ports:
+      - "6379:6379"
+
+  merkat-catalog:
+    build: .
+    container_name: merkat-catalog
+    ports:
+      - "8099:8099"
+    environment:
+      - PORT=8099
+      - MONGODB_URI=mongodb://mongo:27017/merkat
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongo
+      - redis
+
+volumes:
+  merkat_mongo_data:
